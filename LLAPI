@@ -1,0 +1,74 @@
+//
+//  LLAPI.c
+//  Assignment6
+//
+//  Created by Ryan Dontas on 4/19/14.
+//  Copyright (c) 2014 Ryan Dontas. All rights reserved.
+//
+
+#include <stdio.h>
+#include <stdlib.h>
+#include "GenericLinkedList.h"
+
+
+node_t * createnewempty(){
+    node_t *new = (node_t *) malloc(sizeof(node_t));
+    new->item = NULL;
+    new->next = NULL;
+    new->back = NULL;
+    return new;
+}
+
+node_t * createnewnode(void * item){
+    node_t *new = (node_t *) malloc(sizeof(node_t));
+    new->item = item;
+    new->next = NULL;
+    new->back = NULL;
+    return new;
+}
+
+void insertatend(node_t * node){
+    node_t * mover = head;
+    if (head == NULL) {
+        head = node;
+        return;
+    }
+    else {
+        while (mover->next != NULL){
+            mover = mover->next;
+        }
+        mover->next = node;
+        node->back = mover;
+        node->next = NULL;
+    }
+    return;
+}
+
+void deletenode(node_t * node) {  // could be void* item
+    node_t * mover = head;
+    if (head == NULL) {
+        return;
+    }
+    else {
+        while (mover->next != NULL && (mover->next)->item != node->item){
+            mover = mover->next;
+        }
+        if (mover->next == NULL && mover->item != node->item){
+            return;
+        }
+        if (mover->next == NULL && mover->item == node->item) {
+            mover = mover->back;
+            mover->next = NULL;
+            return;
+        }
+        mover = mover->next;
+        (mover->back)->next = mover->next;
+        (mover->next)->back = mover->back;
+    }
+    return;
+}
+
+void * item(node_t * node) {
+    return node->item;
+}
+
