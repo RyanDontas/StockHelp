@@ -1,0 +1,46 @@
+//
+//  stockapi.c
+//  Assignment6
+//
+//  Created by Ryan Dontas on 4/22/14.
+//  Copyright (c) 2014 Ryan Dontas. All rights reserved.
+//
+
+#include <stdio.h>
+#include <stdlib.h>
+#include "Stock.h"
+#include "GenericLinkedList.h"
+
+stock_t * createnew() {
+    stock_t *new = (stock_t *) malloc(sizeof(stock_t));
+    new->stockSymbol = NULL;
+    new->closingSharePrice = 0.0;
+    new->openingSharePrice = 0.0;
+    new->numberOfShares = 0;
+    new->getPrice = NULL;
+    new->getTotalDollarAmount = NULL;
+    new->getPercentChange = NULL;
+    new->toString = NULL;
+    return new;
+}
+
+float getPricef(void * S) {
+    stock_t * a = (stock_t *) S;
+    return a->closingSharePrice;
+}
+
+float getTotalDollarAmtf(void * S){
+    stock_t * a = (stock_t *) S;
+    return (a->closingSharePrice) * (a->numberOfShares);
+}
+
+float getPercentChangef(void * S){
+    stock_t * a = (stock_t *) S;
+    return ((a->closingSharePrice - a->openingSharePrice) / a->openingSharePrice);
+}
+
+char * toStringf(void * S){
+    stock_t * a = (stock_t *) S;
+    return a->stockSymbol;
+}
+
