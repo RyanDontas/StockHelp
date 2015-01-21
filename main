@@ -1,0 +1,223 @@
+//
+//  main.c
+//  Assignment6
+//
+//  Created by Ryan Dontas on 4/19/14.
+//  Copyright (c) 2014 Ryan Dontas. All rights reserved.
+//
+
+#include <stdio.h>
+#include <stdlib.h>
+#include "GenericLinkedList.h"
+#include "Stock.h"
+
+int menu();
+void menuone();
+void menutwo();
+void menuthree();
+
+int main(int argc, const char * argv[]) {
+    head = NULL;
+    stock_t * stock;
+    stock_t * newstock;
+    node_t * node;
+    int menuint = 0;
+    int i = 0;
+    char * temp;
+    
+    FILE *inf = fopen("/Users/ryandontas/Downloads/stocks", "r"); //opens a file for READING
+    char buffer[80];
+    char *name, *opening,*closing, *shares; //need these since you read data in as a char string then convert to float or int
+    float opens, closes;
+    int numshares;
+	
+	if (inf == NULL){
+		puts("no file you idiot");
+		exit(1);
+	}
+	
+    int count = 0;
+    
+    while (1) {
+        fgets(buffer, 80, inf); //reads in at most 80 char from a line
+        if (feof(inf)) //this checks to see if the special EOF was read
+            break;     //if so, break out of while and continue with your main
+        name = (char *) malloc(sizeof(char)*20);
+        opening = (char *) malloc(sizeof(char)*20);
+        closing = (char *) malloc(sizeof(char)*20);
+        shares = (char *) malloc(sizeof(char)*20);
+        
+        name = strtok(buffer, " ");//get first token up to space
+        opening = strtok(NULL, " ");  //get next token up to space
+        closing = strtok(NULL, " ");  //get next token up to space
+        shares = strtok(NULL, "\n"); //get next token up to \n
+        
+        opens = atof(opening);
+        closes = atof(closing);
+        numshares = atoi(shares);
+        printf("line: %s %f %f %i\n",name,opens,closes,numshares);
+        count++;
+        
+        //now you need to insert the square into a node of the generic link list
+        stock = createnew();
+        i = 0;
+        temp = name;
+        stock->stockSymbol = (char *) malloc(sizeof(char)*10);
+        while (*(temp + i) != '\0'){
+            *(stock->stockSymbol + i) = *(temp + i);
+            i++;
+        }
+        
+        stock->openingSharePrice = opens;
+        stock->closingSharePrice = closes;
+        stock->numberOfShares = numshares;
+        node = createnewnode(stock);
+        newstock = (stock_t *) node->item;
+        
+        insertatend(node);
+        
+        
+        
+    }
+    
+    fclose(inf);  //Closes a file.
+    printf("%d new records were read\n", count);
+    //Hopefully, at this point, the data is nicely stored in the generic link list
+    
+    menuint = menu();
+    while (menuint != 4) {
+        if (menuint == 1){
+            menuone();
+            menuint = menu();
+        }
+        else if (menuint == 2) {
+            menutwo();
+            menuint = menu();
+        }
+        else if (menuint == 3) {
+            menuthree();
+            menuint = menu();
+        }
+    }
+    printf("Goodbye!");
+    return 0;
+    
+    
+    
+}
+
+int menu(){
+	int a;
+	puts("please choose from the following choices");
+    puts("1. Search/print stock with closing price > some amount");
+    puts("2. Search/print stock with % change > some amount");
+    puts("3. List all the stocks using toString");
+    puts("4. Quit and leave");
+    scanf("%d", &a);
+    return	a;
+}
+
+void menuone(){
+    int num;
+    int i = 0;
+    printf("Enter in the number you want to test: ");
+    scanf("%d", &num);
+    printf("%d \n", num);
+    
+    i = 0;
+    printf("What stocks have a closing prices > %d? \n", num);
+    node_t * mover = head;
+    stock_t * a;
+    char * hey;
+    while (mover->next != NULL){
+        a = (stock_t *) mover->item;
+        if (a->closingSharePrice > num){
+            hey = toStringf(a);
+            while (*(hey + i) != '\0'){
+                printf("%c", *(hey + i));
+                i++;
+            }
+            printf("\n");
+        }
+        mover = mover->next;
+        hey = "";
+        i =0;
+    }
+    a = (stock_t *) mover->item;
+    if (a->closingSharePrice > num){
+        hey = toStringf(a);
+        while (*(hey + i) != '\0'){
+            printf("%c", *(hey + i));
+            i++;
+        }
+        printf("\n");
+    }
+    return;
+    
+    
+}
+
+void menutwo(){
+    float num;
+    int i = 0;
+    printf("Enter in the float you want to test: ");
+    scanf("%f", &num);
+    printf("What stocks have a percent change > %f? \n", num);
+    float percentchange;
+    node_t * mover = head;
+    stock_t * a;
+    char * hey;
+    while (mover->next != NULL){
+        a = (stock_t *) mover->item;
+        percentchange = getPercentChangef(a);
+        if (percentchange > num){
+            hey = toStringf(a);
+            while (*(hey + i) != '\0'){
+                printf("%c", *(hey + i));
+                i++;
+            }
+            printf("\n");
+        }
+        hey = NULL;
+        mover = mover->next;
+        i = 0;
+    }
+    a = (stock_t *) mover->item;
+    percentchange = getPercentChangef(a);
+    if (percentchange > num){
+        hey = toStringf(a);
+        while (*(hey + i) != '\0'){
+            printf("%c", *(hey + i));
+            i++;
+        }
+        printf("\n");
+    }
+    return;
+    
+}
+
+void menuthree() {
+    node_t * mover = head;
+    char * hey;
+    stock_t * a;
+    while (mover->next != NULL){
+        a = (stock_t *) mover->item;
+        hey = toStringf(a);
+        while (*hey != '\0'){
+            printf("%c", *hey);
+            hey = (hey + 1);
+        }
+        printf("\n");
+        mover = mover->next;
+        hey = "";
+    }
+    a = (stock_t *) mover->item;
+    hey = toStringf(a);
+    while (*hey != '\0'){
+        printf("%c", *hey);
+        hey = (hey + 1);
+    }
+    printf("\n");
+    return;
+    
+}
