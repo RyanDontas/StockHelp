@@ -18,6 +18,6 @@ AIRFRANCE 55.0 35.0 60
 
 Copy this into plain text file and save.
 
-Compile all files in Xcode and type when prompted.
+Compile all files and type when prompted.
 
 
